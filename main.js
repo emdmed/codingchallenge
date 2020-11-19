@@ -63,18 +63,44 @@ con.connect(function(err) {
     console.log("GETTING TABLE")
     //grab data
     await page.evaluate(()=>{
-        let table = $("table[data-url='dates']")
-        //table body
-        let line = $(table).find('> tbody > tr');
+      let tableArray =[];
+      let table = $("table[data-url='dates']")
+      //table body
+      let line = $(table).find('> tbody > tr');
 
-        for(key in line){
-          let data = $(line[key]).find("td")
-          if(data.length === 8){
-            for(let i =0; i < data.length; i++){
-              console.log(data[i])
+      for(key in line){
+        let lineObject = {}
+        let data = $(line[key]).find("td")
+        if(data.length === 8){
+          for(let i =0; i < data.length; i++){
+            if(i === 0){
+              lineObject.date = $(data[i]).text()
+            } else if (i === 1){
+              lineObject.comissions = $(data[i]).text()
+            } else if (i === 2){
+              lineObject.sales = $(data[i]).text()
+            } else if (i === 3){
+              lineObject.leads = $(data[i]).text()
+            } else if (i === 4){
+              lineObject.clicks = $(data[i]).text()
+            } else if (i === 5){
+              lineObject.epc = $(data[i]).text()
+            } else if(i === 6){
+              lineObject.impressions = $(data[i]).text()
+            } else if (i === 7){
+              lineObject.cr = $(data[i]).text()
+            } else {
+            
             }
           }
+          tableArray.push(lineObject);
+          lineObject = {}
         }
+     
+      
+      }
+
+      console.log("table array",tableArray)
     })
     
     //await browser.close();
