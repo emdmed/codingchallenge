@@ -1,6 +1,18 @@
 const puppeteer = require("puppeteer");
-const { start } = require("repl");
 const secrets = require("./secrets");
+
+var mysql = require('mysql');
+
+var con = mysql.createConnection({
+  host: secrets.db.host,
+  user: secrets.db.user,
+  password: secrets.db.password
+});
+
+con.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected!");
+});
 
 
 (async () => {
@@ -26,8 +38,6 @@ const secrets = require("./secrets");
 
     await page.waitFor(2000)
 
-  
-    
     let datepicker = await page.waitForSelector("#datepicker");
     await datepicker.evaluate(datepicker => datepicker.click())
 
@@ -43,6 +53,12 @@ const secrets = require("./secrets");
         let dropdown = $("button.applyBtn")
         console.log("CLICK ", dropdown[0])
         $(dropdown[0]).click();
+    })
+
+    //grab data
+    await page.evaluate(()=>{
+        let table = $("table[data-url='dates']")
+        console.log(table[0]);
     })
     
 
