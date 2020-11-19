@@ -1,4 +1,5 @@
-const puppeteer = require("puppeteer")
+const puppeteer = require("puppeteer");
+const { start } = require("repl");
 const secrets = require("./secrets");
 
 
@@ -23,9 +24,27 @@ const secrets = require("./secrets");
     let notification = await page.waitForSelector("#pushActionRefuse")
     await notification.evaluate(notification => notification.click())
 
-    //change date range
+    await page.waitFor(2000)
+
+  
+    
     let datepicker = await page.waitForSelector("#datepicker");
     await datepicker.evaluate(datepicker => datepicker.click())
-  
+
+    //set custom range
+    let date1 = await page.waitForSelector("td[data-title='r0c4']")
+    await date1.evaluate(date1 => date1.click());
+    let date2 = await page.waitForSelector("td[data-title='r4c5']")
+    await date2.evaluate(date2 => date2.click());
+
+    //specify desired date range
+    await page.waitForSelector(".applyBtn");
+    await page.evaluate(()=>{
+        let dropdown = $("button.applyBtn")
+        console.log("CLICK ", dropdown[0])
+        $(dropdown[0]).click();
+    })
+    
+
     //await browser.close();
   })();
