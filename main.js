@@ -38,6 +38,9 @@ con.connect(function(err) {
 
     await page.waitFor(2000)
 
+    await page.goto(secrets.rooturl + "/list?type=dates");
+
+    await page.waitFor(2000)
     let datepicker = await page.waitForSelector("#datepicker");
     await datepicker.evaluate(datepicker => datepicker.click())
 
@@ -55,12 +58,24 @@ con.connect(function(err) {
         $(dropdown[0]).click();
     })
 
+    await page.waitFor(2000)
+
+    console.log("GETTING TABLE")
     //grab data
     await page.evaluate(()=>{
         let table = $("table[data-url='dates']")
-        console.log(table[0]);
+        //table body
+        let line = $(table).find('> tbody > tr');
+
+        for(key in line){
+          let data = $(line[key]).find("td")
+          if(data.length === 8){
+            for(let i =0; i < data.length; i++){
+              console.log(data[i])
+            }
+          }
+        }
     })
     
-
     //await browser.close();
   })();
