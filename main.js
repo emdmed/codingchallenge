@@ -21,6 +21,7 @@ con.connect(function (err) {
   //override notifications popup (not working)
   const context = browser.defaultBrowserContext();
   context.overridePermissions(secrets.rooturl, ["notifications", "geolocation"])
+
   const page = await browser.newPage();
   await page.goto(secrets.url);
 
@@ -60,15 +61,34 @@ con.connect(function (err) {
 
   await page.waitFor(2000)
 
+
+
   console.log("GETTING TABLE")
   //grab data
-  let table = await getTableData(page)
-  console.log(table)
+  for (var i = 3; i < 9; i++) {
+    //get pagination buttons
+    await page.evaluate((i) => {
+      let lielements = $(".pagination").find("li");
+      $(lielements[i]).click();
+    }, i)
+
+    await page.waitFor(1000)
+
+    //grab table values
+    let table = await getTableData(page)
+    
+    try{
+      insertElementInDB(table)
+    } catch(err){
+      console.log("Error inserting into db")
+    }
+    
+  }
 
   //await browser.close();
 })();
 
-async function getTableData(page){
+async function getTableData(page) {
   let data = await page.evaluate(() => {
     let tableArray = [];
     let table = $("table[data-url='dates']")
@@ -110,3 +130,16 @@ async function getTableData(page){
 
   return data
 }
+
+
+function insertElementInDB(tableArray){
+  tableArray.forEach(element=>{
+    var sql = `INSERT INTO dateTable (date_, comissionTotal, salesNet, leadsNet, clicks, epc, impressions, cr) VALUES (${element.date}, ${element.comissions}, ${element.sales}, ${element.leads}, ${element.clicks}, ${element.epc}, ${element.impressions}, ${element.cr})`;
+    con.query(sql, function (err, result) {
+      if (err) throw err;
+      console.log("1 record inserted");
+    });
+  })
+
+}
+
