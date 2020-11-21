@@ -62,10 +62,7 @@ con.connect(function (err) {
 
   await page.waitFor(2000)
 
-
-
-  console.log("GETTING TABLE")
-  //grab data
+  //get data
   for (var i = 3; i < 9; i++) {
     //get pagination buttons
     await page.evaluate((i) => {
@@ -87,13 +84,14 @@ con.connect(function (err) {
     
   }
 
-  //await browser.close();
+  await browser.close();
 })();
 
 async function getTableData(page) {
   let data = await page.evaluate(() => {
     let tableArray = [];
     let table = $("table[data-url='dates']")
+
     //table body
     let line = $(table).find('> tbody > tr');
 
@@ -130,27 +128,17 @@ async function getTableData(page) {
         lineObject = {}
       }
     }
-    console.log("Table retrieved")
     return tableArray
   })
-
   return data
 }
 
-
 function insertElementInDB(tableArray){
-
   tableArray.forEach(element=>{
-    console.log("date ",element.date)
     var sql = `INSERT INTO affluentDateTable (date_, comissionTotal, salesNet, leadsNet, clicks, epc, impressions, cr) VALUES (${element.date}, ${parseInt(element.comissions.replace("$", ""))}, ${parseInt(element.sales)}, ${parseInt(element.leads)}, ${parseInt(element.clicks)}, ${parseFloat(element.epc.replace("$", ""))}, ${parseInt(element.impressions)}, ${parseFloat(element.cr.replace("%", ""))})`;
-    console.log(sql)
-    
     con.query(sql, function (err, result) {
       if (err) throw err;
       console.log("1 record inserted");
     });
-
   })
-
 }
-

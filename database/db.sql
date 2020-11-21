@@ -6,9 +6,9 @@ CREATE TABLE affluentDateTable(
     salesNet INT(10) NOT NULL,
     leadsNet INT(10) NOT NULL,
     clicks INT(15) NOT NULL,
-    epc DECIMAL(10) NOT NULL,
+    epc DECIMAL(10, 4) NOT NULL,
     impressions INT(15) NOT NULL,
-    cr DECIMAL(5) NOT NULL
+    cr DECIMAL(10,4) NOT NULL
 );
 
 DESCRIBE dateTable
