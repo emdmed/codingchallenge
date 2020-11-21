@@ -112,11 +112,11 @@ async function getTableData(page) {
           } else if (i === 4) {
             lineObject.clicks = $(data[i]).text().replace(",", "")
           } else if (i === 5) {
-            lineObject.epc = $(data[i]).text().replace(",", "")
+            lineObject.epc = $(data[i]).text()
           } else if (i === 6) {
             lineObject.impressions = $(data[i]).text().replace(",", "")
           } else if (i === 7) {
-            lineObject.cr = $(data[i]).text().replace(",", "")
+            lineObject.cr = $(data[i]).text()
           } else {
 
           }
@@ -135,7 +135,7 @@ async function getTableData(page) {
 
 function insertElementInDB(tableArray){
   tableArray.forEach(element=>{
-    var sql = `INSERT INTO dateTable (date_, comissionTotal, salesNet, leadsNet, clicks, epc, impressions, cr) VALUES (${element.date}, ${parseInt(element.comissions.replace("$", ""))}, ${parseInt(element.sales)}, ${parseInt(element.leads)}, ${parseInt(element.clicks)}, ${parseFloat(element.epc.replace("$", ""))}, ${parseInt(element.impressions)}, ${parseFloat(element.cr.replace("%", ""))})`;
+    var sql = `INSERT INTO dateTable (date_, comissionTotal, salesNet, leadsNet, clicks, epc, impressions, cr) VALUES ("${element.date}", ${parseInt(element.comissions.replace("$", ""))}, ${parseInt(element.sales)}, ${parseInt(element.leads)}, ${parseInt(element.clicks)}, ${parseFloat(element.epc.replace("$", ""))}, ${parseInt(element.impressions)}, ${parseFloat(element.cr.replace("%", ""))})`;
     console.log(sql)
     
     con.query(sql, function (err, result) {
