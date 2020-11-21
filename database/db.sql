@@ -1,7 +1,7 @@
 USE kkDZvEdbja;
 
-CREATE TABLE dateTable(
-    date_ VARCHAR(20) NOT NULL,
+CREATE TABLE affluentDateTable(
+    date_ INT(25) NOT NULL,
     comissionTotal INT(10) NOT NULL,
     salesNet INT(10) NOT NULL,
     leadsNet INT(10) NOT NULL,

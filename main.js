@@ -77,6 +77,7 @@ con.connect(function (err) {
 
     //grab table values
     let table = await getTableData(page)
+    console.log(table)
 
     try{
       insertElementInDB(table)
@@ -102,7 +103,11 @@ async function getTableData(page) {
       if (data.length === 8) {
         for (let i = 0; i < data.length; i++) {
           if (i === 0) {
-            lineObject.date = $(data[i]).text().replace(",", "")
+            let textdate = $(data[i]).text().replace(",", "").split(" ");
+            let newdate = new Date(textdate[0] + " " + textdate[1] + "," + textdate[2])
+            console.log(textdate[0] + " " + textdate[1] + "," + textdate[2])
+            console.log("newdate ", newdate);
+            lineObject.date = newdate.getTime()
           } else if (i === 1) {
             lineObject.comissions = $(data[i]).text().replace(",", "")
           } else if (i === 2) {
@@ -134,8 +139,10 @@ async function getTableData(page) {
 
 
 function insertElementInDB(tableArray){
+
   tableArray.forEach(element=>{
-    var sql = `INSERT INTO dateTable (date_, comissionTotal, salesNet, leadsNet, clicks, epc, impressions, cr) VALUES ("${element.date}", ${parseInt(element.comissions.replace("$", ""))}, ${parseInt(element.sales)}, ${parseInt(element.leads)}, ${parseInt(element.clicks)}, ${parseFloat(element.epc.replace("$", ""))}, ${parseInt(element.impressions)}, ${parseFloat(element.cr.replace("%", ""))})`;
+    console.log("date ",element.date)
+    var sql = `INSERT INTO affluentDateTable (date_, comissionTotal, salesNet, leadsNet, clicks, epc, impressions, cr) VALUES (${element.date}, ${parseInt(element.comissions.replace("$", ""))}, ${parseInt(element.sales)}, ${parseInt(element.leads)}, ${parseInt(element.clicks)}, ${parseFloat(element.epc.replace("$", ""))}, ${parseInt(element.impressions)}, ${parseFloat(element.cr.replace("%", ""))})`;
     console.log(sql)
     
     con.query(sql, function (err, result) {
