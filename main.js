@@ -6,7 +6,8 @@ var mysql = require('mysql');
 var con = mysql.createConnection({
   host: secrets.db.host,
   user: secrets.db.user,
-  password: secrets.db.password
+  password: secrets.db.password,
+  database: "sql10377593"
 });
 
 con.connect(function (err) {
@@ -16,7 +17,7 @@ con.connect(function (err) {
 
 
 (async () => {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: true });
 
   //override notifications popup (not working)
   const context = browser.defaultBrowserContext();
@@ -76,7 +77,7 @@ con.connect(function (err) {
 
     //grab table values
     let table = await getTableData(page)
-    
+
     try{
       insertElementInDB(table)
     } catch(err){
@@ -101,21 +102,21 @@ async function getTableData(page) {
       if (data.length === 8) {
         for (let i = 0; i < data.length; i++) {
           if (i === 0) {
-            lineObject.date = $(data[i]).text()
+            lineObject.date = $(data[i]).text().replace(",", "")
           } else if (i === 1) {
-            lineObject.comissions = $(data[i]).text()
+            lineObject.comissions = $(data[i]).text().replace(",", "")
           } else if (i === 2) {
-            lineObject.sales = $(data[i]).text()
+            lineObject.sales = $(data[i]).text().replace(",", "")
           } else if (i === 3) {
-            lineObject.leads = $(data[i]).text()
+            lineObject.leads = $(data[i]).text().replace(",", "")
           } else if (i === 4) {
-            lineObject.clicks = $(data[i]).text()
+            lineObject.clicks = $(data[i]).text().replace(",", "")
           } else if (i === 5) {
-            lineObject.epc = $(data[i]).text()
+            lineObject.epc = $(data[i]).text().replace(",", "")
           } else if (i === 6) {
-            lineObject.impressions = $(data[i]).text()
+            lineObject.impressions = $(data[i]).text().replace(",", "")
           } else if (i === 7) {
-            lineObject.cr = $(data[i]).text()
+            lineObject.cr = $(data[i]).text().replace(",", "")
           } else {
 
           }
@@ -124,7 +125,7 @@ async function getTableData(page) {
         lineObject = {}
       }
     }
-    console.log(tableArray)
+    console.log("Table retrieved")
     return tableArray
   })
 
@@ -134,11 +135,14 @@ async function getTableData(page) {
 
 function insertElementInDB(tableArray){
   tableArray.forEach(element=>{
-    var sql = `INSERT INTO dateTable (date_, comissionTotal, salesNet, leadsNet, clicks, epc, impressions, cr) VALUES (${element.date}, ${element.comissions}, ${element.sales}, ${element.leads}, ${element.clicks}, ${element.epc}, ${element.impressions}, ${element.cr})`;
+    var sql = `INSERT INTO dateTable (date_, comissionTotal, salesNet, leadsNet, clicks, epc, impressions, cr) VALUES (${element.date}, ${parseInt(element.comissions.replace("$", ""))}, ${parseInt(element.sales)}, ${parseInt(element.leads)}, ${parseInt(element.clicks)}, ${parseFloat(element.epc.replace("$", ""))}, ${parseInt(element.impressions)}, ${parseFloat(element.cr.replace("%", ""))})`;
+    console.log(sql)
+    
     con.query(sql, function (err, result) {
       if (err) throw err;
       console.log("1 record inserted");
     });
+
   })
 
 }
